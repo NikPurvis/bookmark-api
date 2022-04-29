@@ -34,14 +34,14 @@ const router = express.Router()
 // Book routes
 ///////////////////////////
 //
-// INDEX
-// "/" test
+// INDEX route
+// "/" root directory test
 router.get("/", (req, res) => {
     res.send("You finally made it!")
 })
 
-// GET route
-// View all books
+// INDEX route
+// Get all books
 router.get('/books', (req, res, next) => {
 	Book.find()
 		.then((books) => {
@@ -53,20 +53,20 @@ router.get('/books', (req, res, next) => {
 		.catch(next)
 })
 
-// GET route
-// Show view for one individual book
+// SHOW route
+// Get one individual book
 router.get('/books/:id', (req, res, next) => {
 	// Book to search for determined by ID in the URL
     Book.findById(req.params.id)
         // If no books found, raise 404 error middleware
         .then(handle404)
         // If book found, respond with 200 status and return the book in JSON format.
-		.then((books) => res.status(200).json({ books: books }))
+		.then((book) => res.status(200).json({ book: book }))
 		// if an error occurs, pass it to the handler.
 		.catch(next)
 })
 
-// POST route
+// NEW route
 // Create a new book
 router.post('/books', requireToken, (req, res, next) => {
 	req.body.book.entered_by = req.user.id
@@ -74,6 +74,22 @@ router.post('/books', requireToken, (req, res, next) => {
 		.then((book) => {
 			res.status(201).json({ book: book.toObject() })
 		})
+		.catch(next)
+})
+
+// EDIT route
+// Update a book
+router.patch('/books/:id', requireToken, removeBlanks, (req, res, next) => {
+	// delete req.body.book.owner
+
+	Book.findById(req.params.id)
+		.then(handle404)
+		.then((book) => {
+			return book.updateOne(req.body.book)
+		})
+		// if that succeeded, return 204 and no JSON
+		.then(() => res.sendStatus(204))
+		// if an error occurs, pass it to the handler
 		.catch(next)
 })
 
