@@ -2,8 +2,9 @@
 
 // Import dependencies
 const mongoose = require('mongoose')
+const {Schema, model} = mongoose
 const reviewSchema = require('./review')
-const tagSchema = require('./tag')
+const tagsSchema = require('./tags')
 
 const bookSchema = new mongoose.Schema(
     {
@@ -32,7 +33,11 @@ const bookSchema = new mongoose.Schema(
 			required: false,
 		},
         reviews: [reviewSchema],
-        tags: [tagSchema]
+			owner: {
+				type: Schema.Types.ObjectId,
+				ref: "User",
+			},
+        tags: [tagsSchema]
 	},{
 		timestamps: true,
 	}
