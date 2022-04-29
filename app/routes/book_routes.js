@@ -1,5 +1,7 @@
 // app/routes/book_routes.js
 
+// Import dependencies
+
 // Express docs: http://expressjs.com/en/api.html
 const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
@@ -27,23 +29,52 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
+
+///////////////////////////
+// Book routes
+///////////////////////////
+//
 // INDEX
 // "/" test
 router.get("/", (req, res) => {
     res.send("You finally made it!")
 })
 
+// GET route
+// View all books
+router.get('/books', (req, res, next) => {
+	Book.find()
+		.then((books) => {
+			return books.map((book) => book.toObject())
+		})
+		// respond with status 200 and JSON of the books
+		.then((books) => res.status(200).json({ books: books }))
+		// if an error occurs, pass it to the handler
+		.catch(next)
+})
 
-// // GET /books
-// router.get('/books', requireToken, (req, res, next) => {
-// 	Book.find()
-// 		.then((books) => {
-// 			return books.map((book) => book.toObject())
-// 		})
-// 		// respond with status 200 and JSON of the examples
-// 		.then((book) => res.status(200).json({ books: books }))
-// 		// if an error occurs, pass it to the handler
-// 		.catch(next)
-// })
+// GET route
+// Show view for one individual book
+router.get('/books/:id', (req, res, next) => {
+	// Book to search for determined by ID in the URL
+    Book.findById(req.params.id)
+        // If no books found, raise 404 error middleware
+        .then(handle404)
+        // If book found, respond with 200 status and return the book in JSON format.
+		.then((books) => res.status(200).json({ books: books }))
+		// if an error occurs, pass it to the handler.
+		.catch(next)
+})
+
+// POST route
+// Create a new book
+router.post('/books', requireToken, (req, res, next) => {
+	req.body.book.entered_by = req.user.id
+	Book.create(req.body.book)
+		.then((book) => {
+			res.status(201).json({ book: book.toObject() })
+		})
+		.catch(next)
+})
 
 module.exports = router

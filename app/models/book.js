@@ -16,6 +16,10 @@ const bookSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		publication: {
+			type: String,
+			required: false,
+		},
         cover: {
 			type: String,
 			required: false,
@@ -32,10 +36,14 @@ const bookSchema = new mongoose.Schema(
 			type: String,
 			required: false,
 		},
+		entered_by: {
+			type: Schema.Types.ObjectId,
+			ref: "User"
+		},
         reviews: [reviewSchema],
 			owner: {
 				type: Schema.Types.ObjectId,
-				ref: "User",
+				ref: "User"
 			},
         tags: [tagsSchema]
 	},{
