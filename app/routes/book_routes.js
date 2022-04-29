@@ -77,6 +77,19 @@ router.post('/books', requireToken, (req, res, next) => {
 		.catch(next)
 })
 
+// DESTROY
+router.delete('/books/:id', requireToken, (req, res, next) => {
+	Book.findById(req.params.id)
+		.then(handle404)
+		.then((book) => {
+			book.deleteOne()
+		})
+		// send back 204 and no content if the deletion succeeded
+		.then(() => res.sendStatus(204))
+		// if an error occurs, pass it to the handler
+		.catch(next)
+})
+
 // EDIT route
 // Update a book
 router.patch('/books/:id', requireToken, removeBlanks, (req, res, next) => {
