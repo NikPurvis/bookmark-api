@@ -24,8 +24,7 @@ const Book = require('../models/book')
 // See all reviews for a book
 router.get("/reviews/:bookId", (req, res, next) => {
     bookId = req.params.bookId
-	Review.findOne({ "reviewOf": bookId })
-        .populate("reviewOf")
+	Book.findById(bookId)
         .populate("owner")
         .then(handle404)
         .then((review) => res.status(200).json({ review: review.toObject() }))
@@ -59,19 +58,7 @@ router.get("/reviews/:id", (req, res, next) => {
 
 // NEW route
 // Create a new review on a book
-// router.post("/reviews/:bookId", requireToken, (req, res, next) => {
-// 	// Sets the review owner to the current user ID
-//     req.body.review.owner = req.user.id
-//     req.body.review.reviewOf = req.params.id
-//     Review.create(req.body.review)
-// 		.then((review) => {
-// 			res.status(201).json({ review: review.toObject() })
-// 		})
-// 		.catch(next)
-// })
-
 router.post("/reviews/:bookId", requireToken, (req, res) => {
-
     bookId = req.params.bookId
     // Adding the reivew owner via user id
     req.body.review.owner = req.user._id
