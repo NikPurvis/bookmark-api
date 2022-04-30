@@ -15,6 +15,7 @@ const router = express.Router()
 // Import models
 const Review = require('../models/review')
 const Book = require('../models/book')
+const reviewSchema = require('../models/review')
 
 ///////////////////////////
 // Review routes
@@ -27,34 +28,41 @@ router.get("/reviews/:bookId", (req, res, next) => {
 	Book.findById(bookId)
         .populate("owner")
         .then(handle404)
-        .then((review) => res.status(200).json({ review: review.toObject() }))
+        .then((reviews) => res.status(200).json({ reviews: reviews.toObject() }))
 		.catch(next)
 })
 
-// INDEX
-// See all reviews by a specific user
-router.get("reviews/user/:userId", (req, res, next) => {
-    userId = req.params.userId
-    Review.find({ "owner": userId })
-        .populate("owner")
-        .populate("reviewOf")
-        .then((reviews) => {
-            return reviews.map((reviews) => reviews.toObject())
-        })
-        .then((reviews) => res.status(200).json({ reviews: reviews }))
+
+// // **** STRETCH GOAL/V2 ****
+// // INDEX
+// // See all reviews by a specific user
+// router.get("reviews/user/:userId", (req, res, next) => {
+//     userId = req.params.userId
+//     Book.find(
+//         { "reviews.owner": userId },
+//         { "reviews.$": 1})
+//     //     .populate("owner")
+//     //     .populate("reviewOf")
+//     //     .then((reviews) => {
+//     //         return reviews.map((reviews) => reviews.toObject())
+//     //     })
+//         .then((reviews) => res.status(200).json({ reviews: reviews }))
+//         .catch(next)
+// })
+
+
+// SHOW
+// Get a specific review by its ID
+router.get("/review/:id", (req, res, next) => {
+    reviewId = req.params.id
+    // Using the projectional operator ($) on the query otherwise it will return the entire subdocument array.
+    Book.find({"reviews._id": reviewId}, {"reviews.$": true})
+        // .populate("owner")
+        .then(handle404)
+        .then((review) => res.status(200).json({ review: review }))
         .catch(next)
 })
 
-// SHOW
-// Get a specific review
-router.get("/reviews/:id", (req, res, next) => {
-	Review.findById(req.params.id)
-        .populate("reviewOf")
-        .populate("owner")
-        .then(handle404)
-        .then((review) => res.status(200).json({ review: review.toObject() }))
-		.catch(next)
-})
 
 // NEW route
 // Create a new review on a book
