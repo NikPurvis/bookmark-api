@@ -3,11 +3,15 @@
 // Import dependencies
 const mongoose = require('mongoose')
 const { Schema, model } = mongoose
-const User = require('./user')
+const shelfSchema = require("./shelf")
 
 const profileSchema = new mongoose.Schema(
     {
-		username: {
+        owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: {
 			type: String,
 			required: false,
             unique: true
@@ -32,10 +36,7 @@ const profileSchema = new mongoose.Schema(
 			type: String,
 			required: false,
 		},
-        owner: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User"
-		}
+        bookshelf: [shelfSchema]
 	},{
 		timestamps: true,
 	}
