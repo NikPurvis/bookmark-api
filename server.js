@@ -6,8 +6,12 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 
 // require route files
-const userRoutes = require('./app/routes/user_routes')
-const bookRoutes = require('./app/routes/book_routes')
+const userRoutes = require("./app/routes/user_routes")
+const bookRoutes = require("./app/routes/book_routes")
+const profileRoutes = require("./app/routes/profile_routes")
+const reviewRoutes = require("./app/routes/review_routes")
+const shelfRoutes = require("./app/routes/shelf_routes")
+const friendRoutes = require("./app/routes/friend_routes")
 
 // require middleware
 const errorHandler = require('./lib/error_handler')
@@ -69,6 +73,10 @@ app.use(requestLogger)
 // register route files
 app.use(userRoutes)
 app.use(bookRoutes)
+app.use(profileRoutes)
+app.use(reviewRoutes)
+app.use(shelfRoutes)
+app.use(friendRoutes)
 
 // register error handling middleware
 // note that this comes after the route middlewares, because it needs to be

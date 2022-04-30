@@ -2,7 +2,7 @@
 
 // Import dependencies
 const mongoose = require('mongoose')
-const {Schema, model} = mongoose
+const { Schema } = mongoose
 const reviewSchema = require('./review')
 const tagsSchema = require('./tags')
 

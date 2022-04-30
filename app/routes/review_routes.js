@@ -1,4 +1,4 @@
-// app/routes/book_routes.js
+// app/routes/review_routes.js
 
 // Import dependencies
 
@@ -8,7 +8,7 @@ const express = require('express')
 const passport = require('passport')
 
 // pull in Mongoose model for books
-const Book = require('../models/book')
+const Review = require('../models/review')
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -69,8 +69,7 @@ router.get('/books/:id', (req, res, next) => {
 // NEW route
 // Create a new book
 router.post('/books', requireToken, (req, res, next) => {
-	// Sets the book entry's creator to the current user ID
-    req.body.book.entered_by = req.user.id
+	req.body.book.entered_by = req.user.id
 	Book.create(req.body.book)
 		.then((book) => {
 			res.status(201).json({ book: book.toObject() })

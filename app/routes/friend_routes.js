@@ -1,4 +1,4 @@
-// app/routes/book_routes.js
+// app/routes/friend_routes.js
 
 // Import dependencies
 
@@ -8,7 +8,7 @@ const express = require('express')
 const passport = require('passport')
 
 // pull in Mongoose model for books
-const Book = require('../models/book')
+const Friend = require('../models/friend')
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -31,19 +31,16 @@ const router = express.Router()
 
 
 ///////////////////////////
-// Book routes
+// Friend routes
 ///////////////////////////
 //
 // INDEX route
-// "/" root directory test
-router.get("/", (req, res) => {
-    res.send("You finally made it!")
-})
-
-// INDEX route
-// Get all books
-router.get('/books', (req, res, next) => {
-	Book.find()
+// Get all friends
+// * Where userid is in friendPart1 or friendPart2
+router.get('/friends/:userId', (req, res, next) => {
+	const userId = req.params.userId
+	
+	Friend.find()
 		.then((books) => {
 			return books.map((book) => book.toObject())
 		})
@@ -69,8 +66,7 @@ router.get('/books/:id', (req, res, next) => {
 // NEW route
 // Create a new book
 router.post('/books', requireToken, (req, res, next) => {
-	// Sets the book entry's creator to the current user ID
-    req.body.book.entered_by = req.user.id
+	req.body.book.entered_by = req.user.id
 	Book.create(req.body.book)
 		.then((book) => {
 			res.status(201).json({ book: book.toObject() })

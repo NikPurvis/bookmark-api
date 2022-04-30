@@ -3,7 +3,7 @@
 // Import dependencies
 const mongoose = require('mongoose')
 
-const profileSchema = new mongoose.Schema(
+const friendSchema = new mongoose.Schema(
     {
         friendPart1: {
             type: mongoose.Schema.Types.ObjectId,
@@ -14,7 +14,7 @@ const profileSchema = new mongoose.Schema(
             ref: "User"
         }
     },{
-        timestampes: true,
+        timestamps: true,
     }
 )
 
