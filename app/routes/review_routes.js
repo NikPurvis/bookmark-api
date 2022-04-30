@@ -88,22 +88,53 @@ router.post("/reviews/:bookId", requireToken, (req, res) => {
         })
 })
 
-// EDIT route
-// Update a review
-router.patch("/reviews/:id", requireToken, removeBlanks, (req, res, next) => {
-    // To prevent attempts to fake ownership of the review by including a new owner, delete the incoming key/value pair.
-	delete req.body.review.owner
-    reviewId = req.params.id
-    Review.findOne({ reviewId })
-		.then(handle404)
-		.then((review) => {
-			// The request object and Mongoose record pass through requireOwnership to see if they match.
-			requireOwnership(req, review)
-            // If so, update.
-			return review.updateOne(req.body.review)
-		})
-		.then(() => res.sendStatus(204))
-		.catch(next)
-})
+// // // **** STRETCH GOAL/V2 ****
+// // EDIT route
+// // Update a review
+// router.patch("/reviews/:id", requireToken, removeBlanks, (req, res, next) => {
+//     // To prevent attempts to fake ownership of the review by including a new owner, delete the incoming key/value pair.
+// 	delete req.body.review.owner
+//     reviewId = req.params.id
+//     Review.findOne({ reviewId })
+// 		.then(handle404)
+// 		.then((review) => {
+// 			// The request object and Mongoose record pass through requireOwnership to see if they match.
+// 			requireOwnership(req, review)
+//             // If so, update.
+// 			return review.updateOne(req.body.review)
+// 		})
+// 		.then(() => res.sendStatus(204))
+// 		.catch(next)
+// })
+
+
+// // **** STRETCH GOAL/V2 ****
+// // DESTROY
+// // Delete a specific review
+// router.delete("/review/:id", requireToken, (req, res, next) => {
+//     reviewId = req.params.id
+//     reviewToRemove = Book.find({"reviews._id": reviewId}, {"reviews.$": true})
+//     console.log("remove me", reviewToRemove)
+//     Book.findOneAndUpdate
+//     // Book.findOneAndUpdate(
+//     //     {"reviews._id": reviewId}, {"reviews.$": true},
+//     //  -----------
+//     //     { $pull: { "reviews": reviewId }},
+//     //     { "new": true }
+//     // )
+//     //     .then(handle404)
+//     //  -----------
+//         // .then((review) => {
+//         //     requireOwnership
+//         // })
+//     //  -----------
+//         // .then((review) => {
+//         //     requireOwnership(req, review)
+//         //     return review.updateOne({ $pull: })
+//         // })
+//     //  -----------
+//         // .then(() => res.sendStatus(204))
+//         // .catch(next)
+// })
 
 module.exports = router
