@@ -5,6 +5,10 @@ const mongoose = require('mongoose')
 
 const shelfSchema = new mongoose.Schema(
     {
+		owner: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User"
+		},
 		onShelf: [{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Book",
@@ -17,4 +21,4 @@ const shelfSchema = new mongoose.Schema(
 	}
 )
 
-module.exports = shelfSchema
+module.exports = mongoose.model("Shelf", shelfSchema)

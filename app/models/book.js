@@ -4,7 +4,6 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 const reviewSchema = require('./review')
-const tagsSchema = require('./tags')
 
 const bookSchema = new mongoose.Schema(
     {
@@ -44,11 +43,16 @@ const bookSchema = new mongoose.Schema(
 			owner: {
 				type: Schema.Types.ObjectId,
 				ref: "User"
-			},
-        tags: [tagsSchema]
+		},
+		tags: [{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Tag"
+		}],
 	},{
 		timestamps: true,
+		toObject: {virtuals: true},
+		toJSON: {virtuals: true}
 	}
 )
 
-module.exports = mongoose.model('Book', bookSchema)
+module.exports = mongoose.model("Book", bookSchema)

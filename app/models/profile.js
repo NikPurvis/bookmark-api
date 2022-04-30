@@ -2,8 +2,6 @@
 
 // Import dependencies
 const mongoose = require('mongoose')
-const { Schema, model } = mongoose
-const shelfSchema = require("./shelf")
 
 const profileSchema = new mongoose.Schema(
     {
@@ -36,7 +34,10 @@ const profileSchema = new mongoose.Schema(
 			type: String,
 			required: false,
 		},
-        bookshelf: [shelfSchema]
+        bookshelf: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Shelf",
+		}
 	},{
 		timestamps: true,
 	}
