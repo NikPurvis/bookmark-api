@@ -1,9 +1,9 @@
-// app/models/bookshelf.js
+// app/models/shelf.js
 
 // Import dependencies
 const mongoose = require('mongoose')
 
-const bookshelfSchema = new mongoose.Schema(
+const shelfSchema = new mongoose.Schema(
     {
 		owner: {
 			type: mongoose.Schema.Types.ObjectID,
@@ -18,4 +18,5 @@ const bookshelfSchema = new mongoose.Schema(
 	}
 )
 
-module.exports = mongoose.model('Bookshelf', bookshelfSchema)
+const Shelf = mongoose.model("Shelf", shelfSchema)
+module.exports = { Shelf, shelfSchema }

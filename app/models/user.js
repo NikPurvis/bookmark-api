@@ -13,7 +13,12 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		// bookshelf: {
+		// 	type: mongoose.Schema.Types.ObjectId,
+		// 	ref: "Shelf"
+		// },
 		token: String,
+
 	},{
 		timestamps: true,
 		toObject: {

@@ -14,16 +14,18 @@ const reviewSchema = new mongoose.Schema(
 			required: true
 		},
 		stars: {
-			type: String,
+			type: Number,
+			min: 0,
+			max: 5,
+			default: 3,
 			required: true,
-			enum:["0 stars", "1 star", "2 stars", "3 stars", "4 stars", "5 stars"]
 		},
 		is_finished: {
 			type: Boolean,
 			requried: true
 		},
 		owner: {
-			type: mongoose.Schema.Types.ObjectID,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 		},
 		reviewing: {

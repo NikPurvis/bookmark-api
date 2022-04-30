@@ -8,11 +8,7 @@ const tagsSchema = new mongoose.Schema(
         tagName: {
             type: String,
 			required: true
-		},
-        tagged: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Book",
-        }]
+		}
 	},{
 		timestamps: true,
 	}
