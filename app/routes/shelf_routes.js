@@ -13,7 +13,8 @@ const router = express.Router()
 // Import models
 const Shelf = require('../models/shelf')
 const Book = require('../models/book')
-const User = require('../models/user')
+const Profile = require('../models/profile')
+
 
 ///////////////////////////
 // Bookshelf routes
@@ -21,56 +22,31 @@ const User = require('../models/user')
 //
 // SHOW route
 // Get user's bookshelf
-router.get('/books/:id', (req, res, next) => {
-	// Book to search for determined by ID in the URL
-    Book.findById(req.params.id)
-        // If no books found, raise 404 error middleware
+router.get("/bookshelf/:userId", (req, res, next) => {
+    userId = req.params.userId
+	Profile.findOne({ "owner": userId })
         .then(handle404)
-        // If book found, respond with 200 status and return the book in JSON format.
-		.then((book) => res.status(200).json({ book: book }))
-		// if an error occurs, pass it to the handler.
+        .then((profile) => res.status(200).json({ profile: profile.toObject() }))
 		.catch(next)
 })
 
-// NEW route
-// Create a new bookshelf
-router.post('/shelf', requireToken, (req, res, next) => {
-	req.body.shelf.owner = req.user.id
-	Shelf.create(req.body.shelf)
-		.then((shelf) => {
-			res.status(201).json({ shelf: shelf.toObject() })
-		})
-		.catch(next)
-})
-
-// DESTROY
-// Delete a book
-router.delete('/books/:id', requireToken, (req, res, next) => {
-	Book.findById(req.params.id)
-		.then(handle404)
-		.then((book) => {
-			book.deleteOne()
-		})
-		// send back 204 and no content if the deletion succeeded
-		.then(() => res.sendStatus(204))
-		// if an error occurs, pass it to the handler
-		.catch(next)
-})
-
-// EDIT route
-// Update a book
-router.patch('/books/:id', requireToken, removeBlanks, (req, res, next) => {
-	// delete req.body.book.owner
-
-	Book.findById(req.params.id)
-		.then(handle404)
-		.then((book) => {
-			return book.updateOne(req.body.book)
-		})
-		// if that succeeded, return 204 and no JSON
-		.then(() => res.sendStatus(204))
-		// if an error occurs, pass it to the handler
-		.catch(next)
+// POST route
+// Add book to user's bookshelf
+router.post("/bookshelf/:bookId", requireToken, (req, res) => {
+    bookId = req.params.bookId
+    userId = req.user.id
+    const newShelved = { "owner": userId, "onShelf": bookId}
+    console.log("newShelved:", newShelved)
+    Profile.findOne({ "owner": userId })
+        .then(profile => {
+            profile.bookshelf.push(newShelved)
+            return profile.save()
+        })
+        .then(() => res.sendStatus(204))
+        .catch(error => {
+            console.log(error)
+            res.send(error)
+        })
 })
 
 module.exports = router
