@@ -20,17 +20,14 @@ const reviewSchema = new mongoose.Schema(
 			default: 3,
 			required: true,
 		},
-		is_finished: {
+		isFinished: {
 			type: Boolean,
-			requried: true
+			requried: true,
+			default: true
 		},
 		owner: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
-		},
-		reviewing: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Book",
 		}
 	},{
 		timestamps: true,

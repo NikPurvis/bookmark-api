@@ -1,109 +1,113 @@
 // app/routes/review_routes.js
 
 // Import dependencies
-
-// Express docs: http://expressjs.com/en/api.html
 const express = require('express')
-// Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
-
-// pull in Mongoose model for books
-const Review = require('../models/review')
-
-// this is a collection of methods that help us detect situations when we need
-// to throw a custom error
 const customErrors = require('../../lib/custom_errors')
-
-// we'll use this function to send 404 when non-existant document is requested
-const handle404 = customErrors.handle404
-// we'll use this function to send 401 when a user tries to modify a resource
-// that's owned by someone else
-const requireOwnership = customErrors.requireOwnership
-
 const removeBlanks = require('../../lib/remove_blank_fields')
-// passing this as a second argument to `router.<verb>` will make it
-// so that a token MUST be passed for that route to be available
-// it will also set `req.user`
+
+const handle404 = customErrors.handle404
+const requireOwnership = customErrors.requireOwnership
 const requireToken = passport.authenticate('bearer', { session: false })
 
-// instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
+// Import models
+const Review = require('../models/review')
+const Book = require('../models/book')
 
 ///////////////////////////
-// Book routes
+// Review routes
 ///////////////////////////
 //
-// INDEX route
-// "/" root directory test
-router.get("/", (req, res) => {
-    res.send("You finally made it!")
-})
-
-// INDEX route
-// Get all books
-router.get('/books', (req, res, next) => {
-	Book.find()
-		.then((books) => {
-			return books.map((book) => book.toObject())
-		})
-		// respond with status 200 and JSON of the books
-		.then((books) => res.status(200).json({ books: books }))
-		// if an error occurs, pass it to the handler
+// INDEX
+// See all reviews for a book
+router.get("/reviews/:bookId", (req, res, next) => {
+    bookId = req.params.bookId
+	Review.findOne({ "reviewOf": bookId })
+        .populate("reviewOf")
+        .populate("owner")
+        .then(handle404)
+        .then((review) => res.status(200).json({ review: review.toObject() }))
 		.catch(next)
 })
 
-// SHOW route
-// Get one individual book
-router.get('/books/:id', (req, res, next) => {
-	// Book to search for determined by ID in the URL
-    Book.findById(req.params.id)
-        // If no books found, raise 404 error middleware
+// INDEX
+// See all reviews by a specific user
+router.get("reviews/user/:userId", (req, res, next) => {
+    userId = req.params.userId
+    Review.find({ "owner": userId })
+        .populate("owner")
+        .populate("reviewOf")
+        .then((reviews) => {
+            return reviews.map((reviews) => reviews.toObject())
+        })
+        .then((reviews) => res.status(200).json({ reviews: reviews }))
+        .catch(next)
+})
+
+// SHOW
+// Get a specific review
+router.get("/reviews/:id", (req, res, next) => {
+	Review.findById(req.params.id)
+        .populate("reviewOf")
+        .populate("owner")
         .then(handle404)
-        // If book found, respond with 200 status and return the book in JSON format.
-		.then((book) => res.status(200).json({ book: book }))
-		// if an error occurs, pass it to the handler.
+        .then((review) => res.status(200).json({ review: review.toObject() }))
 		.catch(next)
 })
 
 // NEW route
-// Create a new book
-router.post('/books', requireToken, (req, res, next) => {
-	req.body.book.entered_by = req.user.id
-	Book.create(req.body.book)
-		.then((book) => {
-			res.status(201).json({ book: book.toObject() })
-		})
-		.catch(next)
-})
+// Create a new review on a book
+// router.post("/reviews/:bookId", requireToken, (req, res, next) => {
+// 	// Sets the review owner to the current user ID
+//     req.body.review.owner = req.user.id
+//     req.body.review.reviewOf = req.params.id
+//     Review.create(req.body.review)
+// 		.then((review) => {
+// 			res.status(201).json({ review: review.toObject() })
+// 		})
+// 		.catch(next)
+// })
 
-// DESTROY
-// Delete a book
-router.delete('/books/:id', requireToken, (req, res, next) => {
-	Book.findById(req.params.id)
-		.then(handle404)
-		.then((book) => {
-			book.deleteOne()
-		})
-		// send back 204 and no content if the deletion succeeded
-		.then(() => res.sendStatus(204))
-		// if an error occurs, pass it to the handler
-		.catch(next)
+router.post("/reviews/:bookId", requireToken, (req, res) => {
+
+    bookId = req.params.bookId
+    // Adding the reivew owner via user id
+    req.body.review.owner = req.user._id
+    // Find the book the user is reviewing
+    Book.findById(bookId)
+        .then(book => {
+            // Adding the review to the book's reviews array...
+            console.log("review body:", req.body)
+            book.reviews.push(req.body.review)
+            // ...and save the book
+            return book.save()
+        })
+        // Send confirmation that the review was added successfully
+        .then(() => res.sendStatus(204))
+        // Throw an error if something went wrong
+        .catch(error => {
+            console.log(error)
+            res.send(error)
+        })
 })
 
 // EDIT route
-// Update a book
-router.patch('/books/:id', requireToken, removeBlanks, (req, res, next) => {
-	// delete req.body.book.owner
-
-	Book.findById(req.params.id)
+// Update a review
+router.patch("/reviews/:id", requireToken, removeBlanks, (req, res, next) => {
+    // To prevent attempts to fake ownership of the review by including a new owner, delete the incoming key/value pair.
+	delete req.body.review.owner
+    reviewId = req.params.id
+    Review.findOne({ reviewId })
 		.then(handle404)
-		.then((book) => {
-			return book.updateOne(req.body.book)
+		.then((review) => {
+			// The request object and Mongoose record pass through requireOwnership to see if they match.
+			requireOwnership(req, review)
+            // If so, update.
+			return review.updateOne(req.body.review)
 		})
-		// if that succeeded, return 204 and no JSON
 		.then(() => res.sendStatus(204))
-		// if an error occurs, pass it to the handler
 		.catch(next)
 })
 
