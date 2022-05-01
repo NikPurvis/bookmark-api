@@ -37,16 +37,28 @@ router.patch("/bookshelf/:id", requireToken, async (req, res, next) => {
     userId = req.user.id
     await Shelf.findOneAndUpdate(
         { "owner": userId },
-        { $addToSet: { onShelf: bookId }}
-    )
-        .then(handle404)
-        .then((shelf) => res.status(200).json({ shelf: shelf.toObject() }))
+        { $addToSet: { onShelf: bookId }
+    })
+        .then(() => res.sendStatus(204))
+        .catch(next)
+})
+
+// DELETE route
+// Remove book from user's bookshelf
+router.delete("/bookshelf/:id", requireToken, async (req, res, next) => {
+    bookId = req.params.id
+    userId = req.user.id
+    await Shelf.findOneAndUpdate(
+        { "owner": userId },
+        { $pull: { onShelf: bookId }
+    })
+        .then(() => res.sendStatus(204))
         .catch(next)
 })
 
 
 // NEW route
-// Create a new profile
+// Create a new shelf
 router.post("/bookshelf", requireToken, (req, res, next) => {
 	shelfOwner = req.user.id
     newShelf = { "owner": shelfOwner }
@@ -56,5 +68,7 @@ router.post("/bookshelf", requireToken, (req, res, next) => {
 		})
 		.catch(next)
 })
+
+
 
 module.exports = router
