@@ -22,6 +22,7 @@ const bookSchema = new mongoose.Schema(
         cover: {
 			type: String,
 			required: false,
+			default: "cover.png"
 		},
         isbn: {
 			type: String,
