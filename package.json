@@ -1,13 +1,13 @@
 {
-  "name": "express-auth-mongoose-boilerplate",
+  "name": "bookmark",
   "version": "1.0.0",
-  "description": "Auth boilerplate for mongoose express using token auth",
+  "description": "A book logger and hub for fans of the written word.",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Timm Schoenborn",
+  "author": "Nikki Purvis",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
