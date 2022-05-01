@@ -6,7 +6,7 @@ const mongoose= require("mongoose")
 
 const tagsSchema = new mongoose.Schema(
     {
-        tagName: {
+        category: {
             type:String,
             required:true
         },

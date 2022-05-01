@@ -11,10 +11,7 @@ const shelfSchema = new mongoose.Schema(
 		},
 		onShelf: [{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Book",
-			required: true
-		},{
-			timestamps: true
+			ref: "Book"
 		}]
     },{
 		timestamps: true,
