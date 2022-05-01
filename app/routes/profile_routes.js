@@ -16,7 +16,17 @@ const Profile = require('../models/profile')
 ///////////////////////////
 // Profile routes
 ///////////////////////////
-//
+
+// // SHOW
+// // Get the profile for the logged-in user
+// router.get("/profile/mine", requireToken, (req, res, next) => {
+// 	console.log("req:", req)
+// 	Profile.findOne({ "owner": req.user.id })
+//         .then(handle404)
+//         .then((profile) => res.status(200).json({ profile: profile.toObject() }))
+// 		.catch(next)
+// })
+
 // SHOW
 // Get the user profile via the ID in the URL
 router.get("/profile/:userId", (req, res, next) => {
@@ -27,17 +37,18 @@ router.get("/profile/:userId", (req, res, next) => {
 		.catch(next)
 })
 
-// NEW route
-// Create a new profile
-router.post("/profile/new", requireToken, (req, res, next) => {
-	// Sets the profile owner to the current user ID
-    req.body.profile.owner = req.user.id
-    Profile.create(req.body.profile)
-		.then((profile) => {
-			res.status(201).json({ profile: profile.toObject() })
-		})
-		.catch(next)
-})
+// // **** Profile document now created for user at sign-up, this route is no longer needed.
+// // NEW route
+// // Create a new profile
+// router.post("/profile/new", requireToken, (req, res, next) => {
+// 	// Sets the profile owner to the current user ID
+//     req.body.profile.owner = req.user.id
+//     Profile.create(req.body.profile)
+// 		.then((profile) => {
+// 			res.status(201).json({ profile: profile.toObject() })
+// 		})
+// 		.catch(next)
+// })
 
 
 // EDIT route
