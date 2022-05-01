@@ -29,7 +29,7 @@ router.get("/profile/:userId", (req, res, next) => {
 
 // NEW route
 // Create a new profile
-router.post("/profile", requireToken, (req, res, next) => {
+router.post("/profile/new", requireToken, (req, res, next) => {
 	// Sets the profile owner to the current user ID
     req.body.profile.owner = req.user.id
     Profile.create(req.body.profile)

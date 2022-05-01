@@ -16,7 +16,8 @@ const BadParamsError = errors.BadParamsError
 const BadCredentialsError = errors.BadCredentialsError
 
 const User = require('../models/user')
-const { Shelf } = require('../models/shelf')
+const Profile = require("../models/profile")
+const Shelf = require("../models/shelf")
 
 // passing this as a second argument to `router.<verb>` will make it
 // so that a token MUST be passed for that route to be available
@@ -52,10 +53,16 @@ router.post('/sign-up', (req, res, next) => {
 			}
 		})
 		// create user with provided email and hashed password
-		.then((user) => User.create(user))		
-		// send the new user object back with status 201, but `hashedPassword`
-		// won't be send because of the `transform` in the User model
-		.then((user) => res.status(201).json({ user: user.toObject() }))
+		.then((user) => User.create(user))
+		.then((user) => {
+			// On successful user creation, create that user a profile and bookshelf.
+			Profile.create({ "owner": user._id })
+			Shelf.create({ "owner": user._id })
+		})
+		// Send a success code that the user has been created.
+		.then(() => res.sendStatus(201))
+
+		// .then((user) => res.status(201).json({ user: user.toObject() }))
 		// pass any errors along to the error handler
 		.catch(next)
 })
