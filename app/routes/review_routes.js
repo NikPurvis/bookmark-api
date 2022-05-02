@@ -16,6 +16,7 @@ const router = express.Router()
 const Review = require('../models/review')
 const Book = require('../models/book')
 const reviewSchema = require('../models/review')
+const book = require('../models/book')
 
 ///////////////////////////
 // Review routes
@@ -88,6 +89,50 @@ router.post("/reviews/:bookId", requireToken, (req, res) => {
         })
 })
 
+// DESTROY
+// Delete a specific review
+// router.delete("/review/:bookId/:reviewId", requireToken, (req, res) => {
+//     reviewId = req.params.reviewId
+//     bookId = req.params.bookId
+//     reviewToRemove = Book.find({"reviews._id": reviewId}, {"reviews.$": true})
+//     console.log("remove me", reviewToRemove)
+//     Book.findOneAndUpdate
+
+router.delete("/review/:bookId/:reviewId", requireToken, async (req, res, next) => {
+    reviewId = req.params.reviewId
+    bookId = req.params.bookId
+    userId = req.user.id
+    await Book.findOneAndUpdate(
+        { "id": bookId },
+        { $pull: { reviews: reviewId }
+    })
+        .then(() => res.sendStatus(204))
+        .catch(next)
+})
+
+
+    // Book.findOneAndUpdate(
+    //     {"reviews._id": reviewId}, {"reviews.$": true},
+    //  -----------
+    //     { $pull: { "reviews": reviewId }},
+    //     { "new": true }
+    // )
+    //     .then(handle404)
+    //  -----------
+        // .then((review) => {
+        //     requireOwnership
+        // })
+    //  -----------
+        // .then((review) => {
+        //     requireOwnership(req, review)
+        //     return review.updateOne({ $pull: })
+        // })
+    //  -----------
+        // .then(() => res.sendStatus(204))
+        // .catch(next)
+// })
+
+
 // // // **** STRETCH GOAL/V2 ****
 // // EDIT route
 // // Update a review
@@ -108,33 +153,6 @@ router.post("/reviews/:bookId", requireToken, (req, res) => {
 // })
 
 
-// // **** STRETCH GOAL/V2 ****
-// // DESTROY
-// // Delete a specific review
-// router.delete("/review/:id", requireToken, (req, res, next) => {
-//     reviewId = req.params.id
-//     reviewToRemove = Book.find({"reviews._id": reviewId}, {"reviews.$": true})
-//     console.log("remove me", reviewToRemove)
-//     Book.findOneAndUpdate
-//     // Book.findOneAndUpdate(
-//     //     {"reviews._id": reviewId}, {"reviews.$": true},
-//     //  -----------
-//     //     { $pull: { "reviews": reviewId }},
-//     //     { "new": true }
-//     // )
-//     //     .then(handle404)
-//     //  -----------
-//         // .then((review) => {
-//         //     requireOwnership
-//         // })
-//     //  -----------
-//         // .then((review) => {
-//         //     requireOwnership(req, review)
-//         //     return review.updateOne({ $pull: })
-//         // })
-//     //  -----------
-//         // .then(() => res.sendStatus(204))
-//         // .catch(next)
-// })
+
 
 module.exports = router
