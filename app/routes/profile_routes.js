@@ -53,7 +53,7 @@ router.get("/profile/:userId", (req, res, next) => {
 
 // EDIT route
 // Update user profile
-router.patch("/profile", requireToken, removeBlanks, (req, res, next) => {
+router.patch("/profile/:userId", requireToken, removeBlanks, (req, res, next) => {
     // To prevent attempts to fake ownership of the profile by including a new owner, delete the incoming key/value pair.
 	delete req.body.profile.owner
     // Get the info ourselves
