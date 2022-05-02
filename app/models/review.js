@@ -20,11 +20,11 @@ const reviewSchema = new mongoose.Schema(
 			default: 3,
 			required: true,
 		},
-		isFinished: {
-			type: Boolean,
-			requried: true,
-			default: true
-		},
+		// isFinished: {
+		// 	type: Boolean,
+		// 	requried: true,
+		// 	default: true
+		// },
 		owner: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
