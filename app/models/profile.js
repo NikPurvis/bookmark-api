@@ -12,7 +12,6 @@ const profileSchema = new mongoose.Schema(
         username: {
 			type: String,
 			required: false,
-            unique: true
 		},
 		location: {
 			type: String,
@@ -34,10 +33,6 @@ const profileSchema = new mongoose.Schema(
 			type: String,
 			required: false,
 		},
-        bookshelf: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Shelf",
-		}
 	},{
 		timestamps: true,
 	}
