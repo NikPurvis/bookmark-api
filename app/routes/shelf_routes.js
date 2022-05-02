@@ -22,17 +22,21 @@ const Profile = require('../models/profile')
 //
 // SHOW route
 // Get user's bookshelf
-router.get("/bookshelf/:userId", (req, res, next) => {
-    userId = req.params.userId
+router.get("/bookshelf/", requireToken, (req, res, next) => {
+    userId = req.user.id
 	Shelf.findOne({ "owner": userId })
+        .populate("onShelf")
         .then(handle404)
-        .then((shelf) => res.status(200).json({ shelf: shelf.toObject() }))
-		.catch(next)
-})
+        .then((shelf) => {
+            return shelf.map((shelf) => shelf.toObject())
+        })
+        .then((shelf) => res.status(200).json({ shelf: shelf }))
+        .catch(next)
+    })
 
 // PATCH route
 // Add book to user's bookshelf
-router.patch("/bookshelf/:id", requireToken, async (req, res, next) => {
+router.patch("/bookshelf", requireToken, async (req, res, next) => {
     bookId = req.params.id
     userId = req.user.id
     await Shelf.findOneAndUpdate(
@@ -57,18 +61,17 @@ router.delete("/bookshelf/:id", requireToken, async (req, res, next) => {
 })
 
 
-// NEW route
-// Create a new shelf
-router.post("/bookshelf", requireToken, (req, res, next) => {
-	shelfOwner = req.user.id
-    newShelf = { "owner": shelfOwner }
-    Shelf.create(newShelf)
-		.then((shelf) => {
-			res.status(201).json({ shelf: shelf.toObject() })
-		})
-		.catch(next)
-})
-
-
+// // ** No longer necessary as shelf is now created at user creation.
+// // NEW route
+// // Create a new shelf
+// router.post("/bookshelf", requireToken, (req, res, next) => {
+// 	shelfOwner = req.user.id
+//     newShelf = { "owner": shelfOwner }
+//     Shelf.create(newShelf)
+// 		.then((shelf) => {
+// 			res.status(201).json({ shelf: shelf.toObject() })
+// 		})
+// 		.catch(next)
+// })
 
 module.exports = router
