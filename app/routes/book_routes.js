@@ -1,17 +1,17 @@
 // app/routes/book_routes.js
 
 // Import dependencies and middleware
-const express = require('express')
-const passport = require('passport')
-const customErrors = require('../../lib/custom_errors')
+const express = require("express")
+const passport = require("passport")
+const customErrors = require("../../lib/custom_errors")
 const handle404 = customErrors.handle404
 const requireOwnership = customErrors.requireOwnership
-const removeBlanks = require('../../lib/remove_blank_fields')
-const requireToken = passport.authenticate('bearer', { session: false })
+const removeBlanks = require("../../lib/remove_blank_fields")
+const requireToken = passport.authenticate("bearer", { session: false })
 const router = express.Router()
 
 // Import models
-const Book = require('../models/book')
+const Book = require("../models/book")
 
 
 ///////////////////////////
@@ -26,7 +26,7 @@ router.get("/", (req, res) => {
 
 // INDEX route
 // Get all books
-router.get('/books', (req, res, next) => {
+router.get("/books", (req, res, next) => {
 	Book.find()
 		.then((books) => {
 			return books.map((book) => book.toObject())
@@ -37,9 +37,21 @@ router.get('/books', (req, res, next) => {
 		.catch(next)
 })
 
+// // INDEX route
+// // Sort books by genre
+// router.get("/books/genre", (req, res, next) => {
+// 	Book.find({ genre: "horror "})
+// 		.then((books) => {
+// 			return books.map((book) => book.toObject())
+// 		})
+// 		.then((books) => res.status(200).json({ books: books }))
+// 		.catch(next)
+// })
+
+
 // SHOW route
 // Get one individual book
-router.get('/books/:id', (req, res, next) => {
+router.get("/books/:id", (req, res, next) => {
 	// Book to search for determined by ID in the URL
     Book.findById(req.params.id)
         // If no books found, raise 404 error middleware
@@ -50,10 +62,11 @@ router.get('/books/:id', (req, res, next) => {
 		.catch(next)
 })
 
+
 // NEW route
 // Create a new book
-router.post('/books', requireToken, (req, res, next) => {
-	// Sets the book entry's creator to the current user ID
+router.post("/books", requireToken, (req, res, next) => {
+	// Sets the book entry"s creator to the current user ID
     req.body.book.entered_by = req.user.id
 	Book.create(req.body.book)
 		.then((book) => {
@@ -64,7 +77,7 @@ router.post('/books', requireToken, (req, res, next) => {
 
 // DESTROY
 // Delete a book
-router.delete('/books/:id', requireToken, (req, res, next) => {
+router.delete("/books/:id", requireToken, (req, res, next) => {
 	Book.findById(req.params.id)
 		.then(handle404)
 		.then((book) => {
@@ -78,7 +91,7 @@ router.delete('/books/:id', requireToken, (req, res, next) => {
 
 // EDIT route
 // Update a book
-router.patch('/books/:id', requireToken, removeBlanks, (req, res, next) => {
+router.patch("/books/:id", requireToken, removeBlanks, (req, res, next) => {
 	// delete req.body.book.owner
 
 	Book.findById(req.params.id)
