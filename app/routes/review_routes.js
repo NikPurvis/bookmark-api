@@ -98,7 +98,7 @@ router.post("/reviews/:bookId", requireToken, (req, res) => {
 //     console.log("remove me", reviewToRemove)
 //     Book.findOneAndUpdate
 
-router.delete("/review/:bookId/:reviewId", requireToken, async (req, res, next) => {
+router.delete("/reviews/:bookId/:reviewId", requireToken, async (req, res, next) => {
     reviewId = req.params.reviewId
     bookId = req.params.bookId
     userId = req.user.id
